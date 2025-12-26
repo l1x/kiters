@@ -2,9 +2,14 @@
 name = "kiters"
 version = "0.1.0"
 edition = "2024"
+description = "A collection of useful Rust functions and utilities."
+license = "AGPL-3.0-or-later"
+repository = "https://github.com/l1x/kiters"
+keywords = ["utils", "timestamp", "kit"]
+categories = ["development-tools"]
 
 [dependencies]
-time = { version = "0", features = ["macros", "formatting"] }
+time = { version = "0", features = ["formatting", "macros"] }
 
 [dev-dependencies]
 criterion = { version = "0", features = ["html_reports"] }

@@ -1,11 +1,30 @@
 use time::{OffsetDateTime, format_description::FormatItem, macros::format_description};
 
+/// Returns a static reference to the UTC date-time format description.
+///
+/// The format is ISO 8601-like: `YYYY-MM-DDTHH:MM:SSZ`.
+///
+/// # Returns
+///
+/// A slice of `FormatItem`s that can be used with the `time` crate.
 pub fn get_utc_formatter() -> &'static [FormatItem<'static>] {
     format_description!(
         "[year]-[month padding:zero]-[day padding:zero]T[hour padding:zero]:[minute padding:zero]:[second padding:zero]Z"
     )
 }
 
+/// Returns the current UTC timestamp as a formatted String.
+///
+/// The format is `YYYY-MM-DDTHH:MM:SSZ`.
+///
+/// # Example
+///
+/// ```
+/// use kiters::timestamp::get_utc_timestamp;
+///
+/// let ts = get_utc_timestamp();
+/// println!("Current time: {}", ts); // e.g., 2023-10-27T10:00:00Z
+/// ```
 pub fn get_utc_timestamp() -> String {
     OffsetDateTime::now_utc()
         .format(get_utc_formatter())
