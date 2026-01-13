@@ -27,6 +27,10 @@ harness = false
 name = "eid_bench"
 harness = false
 
+[[bench]]
+name = "timestamp_bench"
+harness = false
+
 [profile.bench]
 lto = "thin"
 codegen-units = 8

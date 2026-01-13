@@ -24,6 +24,20 @@ let ts = get_utc_timestamp();
 println!("Current timestamp: {}", ts);  // 2026-01-13T12:00:00Z
 ```
 
+#### Benchmarks
+
+Using Criterion (`cargo bench --bench timestamp_bench`):
+
+| Implementation | Time | Throughput |
+|----------------|------|------------|
+| `OffsetDateTime::now_utc()` | **37 ns** | 27 M/s |
+| `get_utc_formatter()` | 0.36 ns | 2.8 G/s |
+| Format only (pre-obtained time) | 194 ns | 5.1 M/s |
+| `get_utc_timestamp()` (full) | 220 ns | 4.5 M/s |
+| RFC3339 formatting | 199 ns | 5.0 M/s |
+
+Getting the current time is fast (~37 ns). String formatting dominates the cost.
+
 ### request_id
 
 Fast, thread-safe request ID generator. Produces 6-character URL-safe strings with no heap allocation.
