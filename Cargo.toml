@@ -1,19 +1,15 @@
 [package]
 name = "kiters"
-version = "0.2.0"
+version = "0.1.0"
 edition = "2024"
-description = "Rust utilities: timestamps, request IDs, and external IDs"
+description = "A collection of useful Rust functions and utilities."
 license = "AGPL-3.0-or-later"
 repository = "https://github.com/l1x/kiters"
 keywords = ["utils", "timestamp", "kit"]
 categories = ["development-tools"]
-exclude = [".agent-prompts", ".beads", "prds"]
 
 [dependencies]
-base36 = "0.0.1"
-serde = { version = "1.0.228", features = ["derive"] }
 time = { version = "0", features = ["formatting", "macros"] }
-uuid = { version = "1.19.0", features = ["v4"] }
 
 [dev-dependencies]
 criterion = { version = "0", features = ["html_reports"] }
