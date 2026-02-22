@@ -2,13 +2,17 @@
 
 use criterion::{criterion_group, criterion_main, Criterion, Throughput};
 use std::hint::black_box;
-use kiters::request_id::{as_str, encode_request_id, encode_request_id_mixed, RequestIdGenerator};
+use kiters::request_id::{
+    as_str, encode_request_id, encode_request_id_mixed,
+    encode_request_id_wide, encode_request_id_mixed_wide,
+    RequestIdGenerator, WideRequestIdGenerator,
+};
 
 fn bench_request_id(c: &mut Criterion) {
     let mut group = c.benchmark_group("id_generation");
     group.throughput(Throughput::Elements(1));
 
-    // Our implementations
+    // Our implementations — 6 chars
     group.bench_function("request_id/encode_plain", |b| {
         let mut counter = 0u64;
         b.iter(|| {
@@ -25,18 +29,52 @@ fn bench_request_id(c: &mut Criterion) {
         })
     });
 
+    // Our implementations — 11 chars (wide)
+    group.bench_function("request_id/encode_wide", |b| {
+        let mut counter = 0u64;
+        b.iter(|| {
+            counter += 1;
+            black_box(encode_request_id_wide(black_box(counter)))
+        })
+    });
+
+    group.bench_function("request_id/encode_mixed_wide", |b| {
+        let mut counter = 0u64;
+        b.iter(|| {
+            counter += 1;
+            black_box(encode_request_id_mixed_wide(black_box(counter)))
+        })
+    });
+
+    // Generators — 6 chars
     group.bench_function("request_id/generator_next_id", |b| {
-        let generator = RequestIdGenerator::new();
+        let generator: RequestIdGenerator = RequestIdGenerator::new();
         b.iter(|| black_box(generator.next_id()))
     });
 
     group.bench_function("request_id/generator_mixed", |b| {
-        let generator = RequestIdGenerator::new_mixed();
+        let generator: RequestIdGenerator = RequestIdGenerator::new_mixed();
         b.iter(|| black_box(generator.next_id()))
     });
 
     group.bench_function("request_id/generator_to_string", |b| {
-        let generator = RequestIdGenerator::new();
+        let generator: RequestIdGenerator = RequestIdGenerator::new();
+        b.iter(|| black_box(generator.next_id_string()))
+    });
+
+    // Generators — 11 chars (wide)
+    group.bench_function("request_id/generator_wide", |b| {
+        let generator = WideRequestIdGenerator::new();
+        b.iter(|| black_box(generator.next_id()))
+    });
+
+    group.bench_function("request_id/generator_mixed_wide", |b| {
+        let generator = WideRequestIdGenerator::new_mixed();
+        b.iter(|| black_box(generator.next_id()))
+    });
+
+    group.bench_function("request_id/generator_wide_to_string", |b| {
+        let generator = WideRequestIdGenerator::new();
         b.iter(|| black_box(generator.next_id_string()))
     });
 
@@ -65,8 +103,25 @@ fn bench_batch(c: &mut Criterion) {
         })
     });
 
+    group.bench_function("request_id/encode_wide", |b| {
+        b.iter(|| {
+            for i in 0u64..1000 {
+                black_box(encode_request_id_wide(black_box(i)));
+            }
+        })
+    });
+
     group.bench_function("request_id/generator", |b| {
-        let generator = RequestIdGenerator::new();
+        let generator: RequestIdGenerator = RequestIdGenerator::new();
+        b.iter(|| {
+            for _ in 0..1000 {
+                black_box(generator.next_id());
+            }
+        })
+    });
+
+    group.bench_function("request_id/generator_wide", |b| {
+        let generator = WideRequestIdGenerator::new();
         b.iter(|| {
             for _ in 0..1000 {
                 black_box(generator.next_id());
@@ -94,8 +149,18 @@ fn bench_to_string(c: &mut Criterion) {
         b.iter(|| black_box(as_str(black_box(&id))))
     });
 
+    group.bench_function("request_id/as_str_wide", |b| {
+        let id = encode_request_id_wide(12345);
+        b.iter(|| black_box(as_str(black_box(&id))))
+    });
+
     group.bench_function("request_id/to_owned", |b| {
         let id = encode_request_id(12345);
+        b.iter(|| black_box(as_str(&id).to_owned()))
+    });
+
+    group.bench_function("request_id/to_owned_wide", |b| {
+        let id = encode_request_id_wide(12345);
         b.iter(|| black_box(as_str(&id).to_owned()))
     });
 
