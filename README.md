@@ -8,7 +8,7 @@ Add this to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-kiters = "0.2.0"
+kiters = "0.3.0"
 ```
 
 ## Modules
@@ -40,23 +40,35 @@ Getting the current time is fast (~37 ns). String formatting dominates the cost.
 
 ### request_id
 
-Fast, thread-safe request ID generator. Produces 6-character URL-safe strings with no heap allocation.
+Fast, thread-safe request ID generator. Two widths available:
+- **6 characters** (36 bits, ~68 billion unique IDs) — no heap allocation
+- **11 characters** (66 bits, captures full `u64`) — no heap allocation
 
 ```rust
-use kiters::request_id::{RequestIdGenerator, encode_request_id, as_str};
+use kiters::request_id::{
+    RequestIdGenerator, WideRequestIdGenerator,
+    encode_request_id, encode_request_id_wide, as_str,
+};
 
-// Using the generator (thread-safe)
-let generator = RequestIdGenerator::new();
-let id1 = generator.next_id();  // [u8; 6]
-let id2 = generator.next_id_string();  // String
+// 6-char generator (default)
+let generator: RequestIdGenerator = RequestIdGenerator::new();
+let id = generator.next_id();          // [u8; 6]
+let id_str = generator.next_id_string(); // String
 
-// Or encode a specific u64 directly
-let id = encode_request_id(12345);
-println!("ID: {}", as_str(&id));  // "7CBAAA"
+// 11-char wide generator (full u64 fidelity)
+let wide = WideRequestIdGenerator::new();
+let wide_id = wide.next_id();          // [u8; 11]
 
-// Use mixed mode for random-looking output
-let gen_mixed = RequestIdGenerator::new_mixed();
-let random_looking = gen_mixed.next_id_string();
+// Free functions
+let id6 = encode_request_id(12345);
+println!("ID: {}", as_str(&id6));       // "7CBAAA"
+
+let id11 = encode_request_id_wide(12345);
+println!("Wide: {}", as_str(&id11));    // 11-char output
+
+// Mixed mode for random-looking output
+let mixed = WideRequestIdGenerator::new_mixed();
+let random_looking = mixed.next_id_string();
 ```
 
 #### Benchmarks
@@ -65,15 +77,21 @@ Compared against the `nanoid` crate using Criterion (`cargo bench`):
 
 | Implementation | Time | Throughput |
 |----------------|------|------------|
-| `encode_request_id` (plain) | **1.78 ns** | 560 M/s |
-| `encode_request_id_mixed` | 2.58 ns | 387 M/s |
-| `RequestIdGenerator::next_id` | 2.64 ns | 378 M/s |
-| `RequestIdGenerator::next_id_string` | 17.3 ns | 57 M/s |
-| `nanoid!(6)` | 1.27 us | 771 K/s |
-| `nanoid!()` (21 chars) | 1.28 us | 778 K/s |
+| `encode_request_id` (6 chars) | **4.95 ns** | 202 M/s |
+| `encode_request_id_mixed` (6 chars) | 5.73 ns | 175 M/s |
+| `encode_request_id_wide` (11 chars) | 8.13 ns | 123 M/s |
+| `encode_request_id_mixed_wide` (11 chars) | 9.98 ns | 98 M/s |
+| `RequestIdGenerator::next_id` (6) | 5.99 ns | 167 M/s |
+| `RequestIdGenerator::next_id` (6, mixed) | 5.97 ns | 168 M/s |
+| `WideRequestIdGenerator::next_id` (11) | 7.35 ns | 134 M/s |
+| `WideRequestIdGenerator::next_id` (11, mixed) | 9.44 ns | 106 M/s |
+| `RequestIdGenerator::next_id_string` (6) | 21.9 ns | 45 M/s |
+| `WideRequestIdGenerator::next_id_string` (11) | 24.9 ns | 40 M/s |
+| `nanoid!(6)` | 1,625 ns | 615 K/s |
+| `nanoid!()` (21 chars) | 1,654 ns | 604 K/s |
 
-Our implementation is ~480x faster than nanoid due to:
-- No heap allocation (returns `[u8; 6]`)
+Wide variants cost ~3 ns more than their 6-char counterparts — still ~170x faster than nanoid. The performance advantage comes from:
+- No heap allocation (returns `[u8; N]`)
 - No RNG calls (deterministic counter)
 - Simple bit-shift encoding vs cryptographic randomness
 
@@ -108,6 +126,7 @@ The bottleneck is UUID v4 generation (RNG). The base36 encoding adds minimal ove
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 0.3.0 | 2026-02-22 | Add configurable request ID width (6 or 11 chars), const generic `RequestIdGenerator<N>`, `WideRequestIdGenerator` |
 | 0.2.0 | 2026-01-13 | Add `request_id` module, export `eid` module |
 | 0.1.0 | 2025-12-01 | Initial release with `timestamp` module |
 
