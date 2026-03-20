@@ -1,12 +1,11 @@
 //! Benchmarks comparing nanoid vs our request_id implementation.
 
-use criterion::{criterion_group, criterion_main, Criterion, Throughput};
-use std::hint::black_box;
+use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use kiters::request_id::{
-    as_str, encode_request_id, encode_request_id_mixed,
-    encode_request_id_wide, encode_request_id_mixed_wide,
-    RequestIdGenerator, WideRequestIdGenerator,
+    RequestIdGenerator, WideRequestIdGenerator, as_str, encode_request_id, encode_request_id_mixed,
+    encode_request_id_mixed_wide, encode_request_id_wide,
 };
+use std::hint::black_box;
 
 fn bench_request_id(c: &mut Criterion) {
     let mut group = c.benchmark_group("id_generation");

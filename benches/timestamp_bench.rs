@@ -1,6 +1,6 @@
 //! Benchmarks for the timestamp module.
 
-use criterion::{criterion_group, criterion_main, Criterion, Throughput};
+use criterion::{Criterion, Throughput, criterion_group, criterion_main};
 use kiters::timestamp::{get_utc_formatter, get_utc_timestamp};
 use std::hint::black_box;
 use time::OffsetDateTime;

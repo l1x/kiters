@@ -31,7 +31,12 @@ const ALPHABET: &[u8; 64] = b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwx
 /// Internal base64 encoder: extracts 6 bits per character, LSB first.
 #[inline]
 fn encode_base64<const N: usize>(n: u64) -> [u8; N] {
-    const { assert!(N <= 11, "N > 11 would shift past u64 width (11 * 6 = 66 >= 64)") }
+    const {
+        assert!(
+            N <= 11,
+            "N > 11 would shift past u64 width (11 * 6 = 66 >= 64)"
+        )
+    }
     let mut buf = [ALPHABET[0]; N];
     let mut i = 0;
     while i < N {
