@@ -132,4 +132,4 @@ The bottleneck is UUID v4 generation (RNG). The base36 encoding adds minimal ove
 
 ## License
 
-AGPL-3.0-or-later
+MIT

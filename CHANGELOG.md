@@ -38,11 +38,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `base36` dependency (and its transitive `failure` + `base-x` deps)
 
-## [0.3.0] - 2026-03-15
+## [0.3.0] - 2026-02-22
 
 ### Added
 - Configurable request ID width (6 or 11 characters)
-- Criterion benchmarks for `timestamp` and `eid` modules
+- `WideRequestIdGenerator` and const generic `RequestIdGenerator<N>`
+- Criterion benchmarks for `timestamp`, `eid`, and `request_id` modules
 
 ## [0.2.0] - 2026-01-13
 
@@ -58,7 +59,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - Updated crate description to reflect all modules
 
-## [0.1.0] - 2025-12-01
+## [0.1.0] - 2025-12-26
 
 ### Added
 - Initial release
@@ -66,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `get_utc_timestamp()` - get current UTC time as `YYYY-MM-DDTHH:MM:SSZ`
   - `get_utc_formatter()` - get reusable format description
 
-[0.4.0]: https://github.com/l1x/kiters/compare/v0.3.0...v0.4.0
-[0.3.0]: https://github.com/l1x/kiters/compare/v0.2.0...v0.3.0
-[0.2.0]: https://github.com/l1x/kiters/compare/v0.1.0...v0.2.0
-[0.1.0]: https://github.com/l1x/kiters/releases/tag/v0.1.0
+[0.4.0]: https://github.com/vectorian-rs/kiters/compare/v0.3.0...v0.4.0
+[0.3.0]: https://github.com/vectorian-rs/kiters/compare/v0.2.0...v0.3.0
+[0.2.0]: https://github.com/vectorian-rs/kiters/compare/v0.1.0...v0.2.0
+[0.1.0]: https://github.com/vectorian-rs/kiters/releases/tag/v0.1.0
