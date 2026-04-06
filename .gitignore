@@ -24,3 +24,7 @@ target
 # Added by cargo
 
 /target
+
+# Beads and agent prompts
+.beads/
+.agent-prompts/
